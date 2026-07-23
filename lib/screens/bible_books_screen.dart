@@ -23,6 +23,10 @@ class _BibleBooksScreenState extends State<BibleBooksScreen> {
   }
 
   Future<void> _load() async {
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
     try {
       final books = await BibleService.getBooks();
       setState(() {
@@ -32,7 +36,7 @@ class _BibleBooksScreenState extends State<BibleBooksScreen> {
       });
     } catch (e) {
       setState(() {
-        _error = 'Não foi possível carregar a Bíblia. Verifique sua internet.';
+        _error = 'O serviço da Bíblia está instável no momento.\nToque para tentar novamente.';
         _loading = false;
       });
     }
@@ -77,9 +81,21 @@ class _BibleBooksScreenState extends State<BibleBooksScreen> {
                 ? const Center(child: CircularProgressIndicator())
                 : _error != null
                     ? Center(
-                        child: Padding(
-                          padding: const EdgeInsets.all(24),
-                          child: Text(_error!, textAlign: TextAlign.center),
+                        child: InkWell(
+                          onTap: _load,
+                          child: Padding(
+                            padding: const EdgeInsets.all(24),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.cloud_off_rounded, size: 40, color: AppColors.navy.withOpacity(0.4)),
+                                const SizedBox(height: 12),
+                                Text(_error!, textAlign: TextAlign.center),
+                                const SizedBox(height: 12),
+                                const Text('🔄 Tentar novamente', style: TextStyle(color: AppColors.bronze, fontWeight: FontWeight.bold)),
+                              ],
+                            ),
+                          ),
                         ),
                       )
                     : ListView(
