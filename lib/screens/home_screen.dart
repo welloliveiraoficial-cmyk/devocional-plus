@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
+import 'bible_books_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -37,6 +38,10 @@ class HomeScreen extends StatelessWidget {
           NavigationDestination(icon: Icon(Icons.person_rounded), label: 'Perfil'),
         ],
         onDestinationSelected: (index) {
+          if (index == 1) {
+            Navigator.of(context).push(MaterialPageRoute(builder: (_) => const BibleBooksScreen()));
+            return;
+          }
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Em breve! 🙏')),
           );
@@ -153,22 +158,37 @@ class _SectionLabel extends StatelessWidget {
   }
 }
 
+class _MenuItemData {
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+  _MenuItemData(this.icon, this.label, this.onTap);
+}
+
 class _QuickMenu extends StatelessWidget {
   const _QuickMenu();
 
-  static const _itens = [
-    (Icons.menu_book_rounded, 'Bíblia'),
-    (Icons.volunteer_activism_rounded, 'Devocionais'),
-    (Icons.edit_note_rounded, 'Diário'),
-    (Icons.calendar_month_rounded, 'Plano'),
-    (Icons.favorite_rounded, 'Favoritos'),
-    (Icons.share_rounded, 'Compartilhar'),
-    (Icons.search_rounded, 'Pesquisar'),
-    (Icons.settings_rounded, 'Ajustes'),
-  ];
+  void _emBreve(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Em breve! 🙏')),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
+    final itens = <_MenuItemData>[
+      _MenuItemData(Icons.menu_book_rounded, 'Bíblia', () {
+        Navigator.of(context).push(MaterialPageRoute(builder: (_) => const BibleBooksScreen()));
+      }),
+      _MenuItemData(Icons.volunteer_activism_rounded, 'Devocionais', () => _emBreve(context)),
+      _MenuItemData(Icons.edit_note_rounded, 'Diário', () => _emBreve(context)),
+      _MenuItemData(Icons.calendar_month_rounded, 'Plano', () => _emBreve(context)),
+      _MenuItemData(Icons.favorite_rounded, 'Favoritos', () => _emBreve(context)),
+      _MenuItemData(Icons.share_rounded, 'Compartilhar', () => _emBreve(context)),
+      _MenuItemData(Icons.search_rounded, 'Pesquisar', () => _emBreve(context)),
+      _MenuItemData(Icons.settings_rounded, 'Ajustes', () => _emBreve(context)),
+    ];
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 22),
       child: GridView.count(
@@ -178,34 +198,37 @@ class _QuickMenu extends StatelessWidget {
         mainAxisSpacing: 14,
         crossAxisSpacing: 14,
         childAspectRatio: 0.85,
-        children: _itens.map((item) => _MenuItem(icon: item.$1, label: item.$2)).toList(),
+        children: itens.map((item) => _MenuItem(data: item)).toList(),
       ),
     );
   }
 }
 
 class _MenuItem extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  const _MenuItem({required this.icon, required this.label});
+  final _MenuItemData data;
+  const _MenuItem({required this.data});
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          width: 52,
-          height: 52,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [BoxShadow(color: AppColors.navy.withOpacity(0.08), blurRadius: 12, offset: const Offset(0, 6))],
+    return InkWell(
+      borderRadius: BorderRadius.circular(16),
+      onTap: data.onTap,
+      child: Column(
+        children: [
+          Container(
+            width: 52,
+            height: 52,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [BoxShadow(color: AppColors.navy.withOpacity(0.08), blurRadius: 12, offset: const Offset(0, 6))],
+            ),
+            child: Icon(data.icon, color: AppColors.navy, size: 22),
           ),
-          child: Icon(icon, color: AppColors.navy, size: 22),
-        ),
-        const SizedBox(height: 8),
-        Text(label, style: const TextStyle(fontSize: 10.5, fontWeight: FontWeight.w600, color: AppColors.navy), textAlign: TextAlign.center),
-      ],
+          const SizedBox(height: 8),
+          Text(data.label, style: const TextStyle(fontSize: 10.5, fontWeight: FontWeight.w600, color: AppColors.navy), textAlign: TextAlign.center),
+        ],
+      ),
     );
   }
 }
