@@ -37,7 +37,7 @@ class _BibleReaderScreenState extends State<BibleReaderScreen> {
       });
     } catch (e) {
       setState(() {
-        _error = 'Não foi possível carregar este capítulo.';
+        _error = 'O serviço da Bíblia está instável no momento.\nToque para tentar novamente.';
         _loading = false;
       });
     }
@@ -60,7 +60,24 @@ class _BibleReaderScreenState extends State<BibleReaderScreen> {
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _error != null
-              ? Center(child: Padding(padding: const EdgeInsets.all(24), child: Text(_error!)))
+              ? Center(
+                  child: InkWell(
+                    onTap: _load,
+                    child: Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.cloud_off_rounded, size: 40, color: AppColors.navy.withOpacity(0.4)),
+                          const SizedBox(height: 12),
+                          Text(_error!, textAlign: TextAlign.center),
+                          const SizedBox(height: 12),
+                          const Text('🔄 Tentar novamente', style: TextStyle(color: AppColors.bronze, fontWeight: FontWeight.bold)),
+                        ],
+                      ),
+                    ),
+                  ),
+                )
               : ListView(
                   padding: const EdgeInsets.all(24),
                   children: _verses
