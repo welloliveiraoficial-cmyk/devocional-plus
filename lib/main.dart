@@ -49,18 +49,14 @@ class _SplashScreenState extends State<SplashScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
-              width: 78,
-              height: 78,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(22),
-                gradient: const LinearGradient(
-                  colors: [Color(0xFFC4A883), AppColors.bronze, Color(0xFF6E5640)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(22),
+              child: Image.asset(
+                'assets/images/logo.png',
+                width: 140,
+                height: 140,
+                fit: BoxFit.cover,
               ),
-              child: const Icon(Icons.menu_book_rounded, color: AppColors.navy, size: 34),
             ),
             const SizedBox(height: 22),
             const Text(
