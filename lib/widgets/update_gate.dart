@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_app_installer/flutter_app_installer.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import '../services/update_checker.dart';
 
 class UpdateGate extends StatefulWidget {
@@ -21,9 +22,24 @@ class _UpdateGateState extends State<UpdateGate> {
   }
 
   Future<void> _checkUpdate() async {
+    final packageInfo = await PackageInfo.fromPlatform();
     final info = await UpdateChecker.check();
-    if (info == null || !info.hasUpdate) return;
+
     if (!mounted) return;
+
+    // DIAGNÓSTICO TEMPORÁRIO
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        duration: const Duration(seconds: 8),
+        content: Text(
+          info == null
+              ? 'Diagnóstico: falha na checagem (info nulo). Versão instalada: ${packageInfo.version}'
+              : 'Diagnóstico: instalada=${packageInfo.version} / mais nova=${info.latestVersion} / hasUpdate=${info.hasUpdate}',
+        ),
+      ),
+    );
+
+    if (info == null || !info.hasUpdate) return;
 
     showDialog(
       context: context,
