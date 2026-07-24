@@ -27,14 +27,13 @@ class _UpdateGateState extends State<UpdateGate> {
 
     if (!mounted) return;
 
-    // DIAGNÓSTICO TEMPORÁRIO
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        duration: const Duration(seconds: 8),
+        duration: const Duration(seconds: 15),
         content: Text(
           info == null
-              ? 'Diagnóstico: falha na checagem (info nulo). Versão instalada: ${packageInfo.version}'
-              : 'Diagnóstico: instalada=${packageInfo.version} / mais nova=${info.latestVersion} / hasUpdate=${info.hasUpdate}',
+              ? 'ERRO: ${UpdateChecker.lastError}'
+              : 'OK: instalada=${packageInfo.version} / nova=${info.latestVersion} / hasUpdate=${info.hasUpdate}',
         ),
       ),
     );
