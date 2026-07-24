@@ -20,13 +20,17 @@ class UpdateChecker {
 
       final response = await http.get(
         Uri.parse('https://api.github.com/repos/$_repoOwner/$_repoName/releases/latest'),
+        headers: {
+          'User-Agent': 'DevocionalPlusApp',
+          'Accept': 'application/vnd.github+json',
+        },
       );
 
       if (response.statusCode != 200) return null;
 
       final data = jsonDecode(response.body);
       String latestVersion = (data['tag_name'] ?? '').toString();
-      latestVersion = latestVersion.replaceAll('v', '').trim();
+      latestVersion = latestVersion.replaceFirst('v', '').trim();
 
       const downloadUrl =
           'https://github.com/$_repoOwner/$_repoName/releases/latest/download/app-release.apk';
