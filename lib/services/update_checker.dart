@@ -13,7 +13,10 @@ class UpdateChecker {
   static const String _repoOwner = 'welloliveiraoficial-cmyk';
   static const String _repoName = 'devocional-plus';
 
+  static String? lastError;
+
   static Future<UpdateInfo?> check() async {
+    lastError = null;
     try {
       final packageInfo = await PackageInfo.fromPlatform();
       final currentVersion = packageInfo.version;
@@ -26,7 +29,10 @@ class UpdateChecker {
         },
       );
 
-      if (response.statusCode != 200) return null;
+      if (response.statusCode != 200) {
+        lastError = 'HTTP ${response.statusCode}: ${response.body}';
+        return null;
+      }
 
       final data = jsonDecode(response.body);
       String latestVersion = (data['tag_name'] ?? '').toString();
@@ -42,7 +48,8 @@ class UpdateChecker {
         latestVersion: latestVersion,
         downloadUrl: downloadUrl,
       );
-    } catch (_) {
+    } catch (e) {
+      lastError = e.toString();
       return null;
     }
   }
