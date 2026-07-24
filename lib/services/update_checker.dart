@@ -17,40 +17,46 @@ class UpdateChecker {
 
   static Future<UpdateInfo?> check() async {
     lastError = null;
-    try {
-      final packageInfo = await PackageInfo.fromPlatform();
-      final currentVersion = packageInfo.version;
 
-      final response = await http.get(
-        Uri.parse('https://api.github.com/repos/$_repoOwner/$_repoName/releases/latest'),
-        headers: {
-          'User-Agent': 'DevocionalPlusApp',
-          'Accept': 'application/vnd.github+json',
-        },
-      );
+    for (int attempt = 1; attempt <= 3; attempt++) {
+      try {
+        final packageInfo = await PackageInfo.fromPlatform();
+        final currentVersion = packageInfo.version;
 
-      if (response.statusCode != 200) {
-        lastError = 'HTTP ${response.statusCode}: ${response.body}';
-        return null;
+        final response = await http.get(
+          Uri.parse('https://api.github.com/repos/$_repoOwner/$_repoName/releases/latest'),
+          headers: {
+            'User-Agent': 'DevocionalPlusApp',
+            'Accept': 'application/vnd.github+json',
+          },
+        ).timeout(const Duration(seconds: 10));
+
+        if (response.statusCode != 200) {
+          lastError = 'HTTP ${response.statusCode}';
+          return null;
+        }
+
+        final data = jsonDecode(response.body);
+        String latestVersion = (data['tag_name'] ?? '').toString();
+        latestVersion = latestVersion.replaceFirst('v', '').trim();
+
+        const downloadUrl =
+            'https://github.com/$_repoOwner/$_repoName/releases/latest/download/app-release.apk';
+
+        final hasUpdate = latestVersion.isNotEmpty && latestVersion != currentVersion;
+
+        return UpdateInfo(
+          hasUpdate: hasUpdate,
+          latestVersion: latestVersion,
+          downloadUrl: downloadUrl,
+        );
+      } catch (e) {
+        lastError = e.toString();
+        if (attempt < 3) {
+          await Future.delayed(const Duration(seconds: 3));
+        }
       }
-
-      final data = jsonDecode(response.body);
-      String latestVersion = (data['tag_name'] ?? '').toString();
-      latestVersion = latestVersion.replaceFirst('v', '').trim();
-
-      const downloadUrl =
-          'https://github.com/$_repoOwner/$_repoName/releases/latest/download/app-release.apk';
-
-      final hasUpdate = latestVersion.isNotEmpty && latestVersion != currentVersion;
-
-      return UpdateInfo(
-        hasUpdate: hasUpdate,
-        latestVersion: latestVersion,
-        downloadUrl: downloadUrl,
-      );
-    } catch (e) {
-      lastError = e.toString();
-      return null;
     }
+    return null;
   }
 }
