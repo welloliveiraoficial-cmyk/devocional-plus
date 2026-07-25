@@ -88,7 +88,10 @@ class _UpdateGateState extends State<UpdateGate> with WidgetsBindingObserver {
       setState(() => _downloading = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Não foi possível baixar. Verifique sua internet e tente de novo.')),
+          SnackBar(
+            duration: const Duration(seconds: 20),
+            content: Text('ERRO NO DOWNLOAD: $e'),
+          ),
         );
       }
     }
