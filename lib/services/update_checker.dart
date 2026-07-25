@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:package_info_plus/package_info_plus.dart';
 
@@ -23,38 +22,29 @@ class UpdateChecker {
         final packageInfo = await PackageInfo.fromPlatform();
         final currentVersion = packageInfo.version;
 
-        final response = await http.get(
-          Uri.parse('https://api.github.com/repos/$_repoOwner/$_repoName/releases/latest'),
-          headers: {
-            'User-Agent': 'DevocionalPlusApp',
-            'Accept': 'application/vnd.github+json',
-          },
-        ).timeout(const Duration(seconds: 10));
+        final response = await http
+            .get(Uri.parse('https://raw.githubusercontent.com/$_repoOwner/$_repoName/main/version.txt'))
+            .timeout(const Duration(seconds: 10));
 
         if (response.statusCode != 200) {
           lastError = 'HTTP ${response.statusCode}';
+          if (attempt < 3) {
+            await Future.delayed(const Duration(seconds: 3));
+            continue;
+          }
           return null;
         }
 
-        final data = jsonDecode(response.body);
-        String latestVersion = (data['tag_name'] ?? '').toString();
-        latestVersion = latestVersion.replaceFirst('v', '').trim();
-
+        final latestVersion = response.body.trim();
         const downloadUrl =
             'https://github.com/$_repoOwner/$_repoName/releases/latest/download/app-release.apk';
 
         final hasUpdate = latestVersion.isNotEmpty && latestVersion != currentVersion;
 
-        return UpdateInfo(
-          hasUpdate: hasUpdate,
-          latestVersion: latestVersion,
-          downloadUrl: downloadUrl,
-        );
+        return UpdateInfo(hasUpdate: hasUpdate, latestVersion: latestVersion, downloadUrl: downloadUrl);
       } catch (e) {
         lastError = e.toString();
-        if (attempt < 3) {
-          await Future.delayed(const Duration(seconds: 3));
-        }
+        if (attempt < 3) await Future.delayed(const Duration(seconds: 3));
       }
     }
     return null;
