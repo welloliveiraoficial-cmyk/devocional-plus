@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz_data;
@@ -100,5 +101,9 @@ class NotificationService {
       default:
         return 'Aproxime-se de Deus hoje.';
     }
+  }
+
+  static Future<void> cancelAll() async {
+    await _plugin.cancelAll();
   }
 }
