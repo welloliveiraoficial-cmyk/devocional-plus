@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import 'bible_books_screen.dart';
 import 'devotionals_screen.dart';
+import 'settings_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -193,7 +194,9 @@ class _QuickMenu extends StatelessWidget {
       _MenuItemData(Icons.favorite_rounded, 'Favoritos', () => _emBreve(context)),
       _MenuItemData(Icons.share_rounded, 'Compartilhar', () => _emBreve(context)),
       _MenuItemData(Icons.search_rounded, 'Pesquisar', () => _emBreve(context)),
-      _MenuItemData(Icons.settings_rounded, 'Ajustes', () => _emBreve(context)),
+      _MenuItemData(Icons.settings_rounded, 'Ajustes', () {
+        Navigator.of(context).push(MaterialPageRoute(builder: (_) => const SettingsScreen()));
+      }),
     ];
 
     return Padding(
