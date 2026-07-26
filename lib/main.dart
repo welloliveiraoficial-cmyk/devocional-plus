@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'theme/app_theme.dart';
 import 'screens/home_screen.dart';
 import 'widgets/update_gate.dart';
+import 'services/notification_service.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await NotificationService.init();
   runApp(const DevocionalPlusApp());
 }
 
@@ -32,6 +35,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
+    _setupNotifications();
     Future.delayed(const Duration(seconds: 2), () {
       if (mounted) {
         Navigator.of(context).pushReplacement(
@@ -39,6 +43,11 @@ class _SplashScreenState extends State<SplashScreen> {
         );
       }
     });
+  }
+
+  Future<void> _setupNotifications() async {
+    await NotificationService.requestPermission();
+    await NotificationService.scheduleDailyNotifications();
   }
 
   @override
