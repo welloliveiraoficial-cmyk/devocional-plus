@@ -1,18 +1,18 @@
 class FavoriteModel {
   final String id;
-  final String prayerId;
+  final String devotionalId;
   final DateTime createdAt;
 
-  FavoriteModel({
+  const FavoriteModel({
     required this.id,
-    required this.prayerId,
+    required this.devotionalId,
     required this.createdAt,
   });
 
   factory FavoriteModel.fromMap(Map<String, dynamic> map) {
     return FavoriteModel(
       id: map['id'] ?? '',
-      prayerId: map['prayerId'] ?? '',
+      devotionalId: map['devotionalId'] ?? '',
       createdAt: DateTime.parse(
         map['createdAt'] ?? DateTime.now().toIso8601String(),
       ),
@@ -22,8 +22,20 @@ class FavoriteModel {
   Map<String, dynamic> toMap() {
     return {
       'id': id,
-      'prayerId': prayerId,
+      'devotionalId': devotionalId,
       'createdAt': createdAt.toIso8601String(),
     };
+  }
+
+  FavoriteModel copyWith({
+    String? id,
+    String? devotionalId,
+    DateTime? createdAt,
+  }) {
+    return FavoriteModel(
+      id: id ?? this.id,
+      devotionalId: devotionalId ?? this.devotionalId,
+      createdAt: createdAt ?? this.createdAt,
+    );
   }
 }
