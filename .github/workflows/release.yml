@@ -22,7 +22,7 @@ jobs:
 
       - name: Configurar assinatura Android
         run: |
-          echo "${{ secrets.KEYSTORE_FILE }}" | base64 --decode > android/devocionalplus-release-key.jks
+          echo "${{ secrets.KEYSTORE_FILE }}" | base64 --decode > android/app/devocionalplus-release-key.jks
 
           cat <<EOF > android/key.properties
           storePassword=${{ secrets.KEYSTORE_PASSWORD }}
