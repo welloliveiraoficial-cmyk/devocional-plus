@@ -4,6 +4,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz_data;
 import '../data/notification_content.dart';
+import '../screens/daily_verse_screen.dart';
 
 class NotificationService {
   static final FlutterLocalNotificationsPlugin _plugin =
@@ -16,7 +17,9 @@ class NotificationService {
     tz_data.initializeTimeZones();
     tz.setLocalLocation(tz.getLocation('America/Sao_Paulo'));
 
-    const androidInit = AndroidInitializationSettings('ic_notification');
+    const androidInit = AndroidInitializationSettings(
+      'ic_notification',
+    );
 
     const initSettings = InitializationSettings(
       android: androidInit,
@@ -32,13 +35,18 @@ class NotificationService {
     NotificationResponse response,
   ) {
     if (response.payload == 'daily_verse') {
-      // A navegação será conectada na próxima etapa.
+      navigatorKey.currentState?.push(
+        MaterialPageRoute(
+          builder: (_) => const DailyVerseScreen(),
+        ),
+      );
     }
   }
 
   static Future<void> requestPermission() async {
-    final androidImpl = _plugin.resolvePlatformSpecificImplementation<
-        AndroidFlutterLocalNotificationsPlugin>();
+    final androidImpl =
+        _plugin.resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>();
 
     await androidImpl?.requestNotificationsPermission();
   }
@@ -81,7 +89,9 @@ class NotificationService {
         body,
         _nextInstanceOf(slot.hour, slot.minute),
         details,
-        payload: slot.kind == 'verse' ? 'daily_verse' : null,
+        payload: slot.kind == 'verse'
+            ? 'daily_verse'
+            : null,
         androidScheduleMode:
             AndroidScheduleMode.inexactAllowWhileIdle,
         matchDateTimeComponents:
