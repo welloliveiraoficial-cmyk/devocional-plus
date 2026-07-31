@@ -6,20 +6,40 @@ import 'package:timezone/data/latest.dart' as tz_data;
 import '../data/notification_content.dart';
 
 class NotificationService {
-  static final FlutterLocalNotificationsPlugin _plugin = FlutterLocalNotificationsPlugin();
+  static final FlutterLocalNotificationsPlugin _plugin =
+      FlutterLocalNotificationsPlugin();
+
+  static final GlobalKey<NavigatorState> navigatorKey =
+      GlobalKey<NavigatorState>();
 
   static Future<void> init() async {
     tz_data.initializeTimeZones();
     tz.setLocalLocation(tz.getLocation('America/Sao_Paulo'));
 
     const androidInit = AndroidInitializationSettings('ic_notification');
-    const initSettings = InitializationSettings(android: androidInit);
-    await _plugin.initialize(initSettings);
+
+    const initSettings = InitializationSettings(
+      android: androidInit,
+    );
+
+    await _plugin.initialize(
+      initSettings,
+      onDidReceiveNotificationResponse: _onNotificationTap,
+    );
+  }
+
+  static void _onNotificationTap(
+    NotificationResponse response,
+  ) {
+    if (response.payload == 'daily_verse') {
+      // A navegação será conectada na próxima etapa.
+    }
   }
 
   static Future<void> requestPermission() async {
     final androidImpl = _plugin.resolvePlatformSpecificImplementation<
         AndroidFlutterLocalNotificationsPlugin>();
+
     await androidImpl?.requestNotificationsPermission();
   }
 
@@ -36,13 +56,17 @@ class NotificationService {
     const androidDetails = AndroidNotificationDetails(
       'devocional_diario',
       'Lembretes Diários',
-      channelDescription: 'Versículos, frases e lembretes de oração diários',
+      channelDescription:
+          'Versículos, frases e lembretes de oração diários',
       importance: Importance.high,
       priority: Priority.high,
       icon: 'ic_notification',
       color: Color(0xFF9C7A5C),
     );
-    const details = NotificationDetails(android: androidDetails);
+
+    const details = NotificationDetails(
+      android: androidDetails,
+    );
 
     final rnd = Random();
     int id = 0;
@@ -57,19 +81,37 @@ class NotificationService {
         body,
         _nextInstanceOf(slot.hour, slot.minute),
         details,
-        androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
-        matchDateTimeComponents: DateTimeComponents.time,
-        uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
+        payload: slot.kind == 'verse' ? 'daily_verse' : null,
+        androidScheduleMode:
+            AndroidScheduleMode.inexactAllowWhileIdle,
+        matchDateTimeComponents:
+            DateTimeComponents.time,
+        uiLocalNotificationDateInterpretation:
+            UILocalNotificationDateInterpretation.absoluteTime,
       );
     }
   }
 
-  static tz.TZDateTime _nextInstanceOf(int hour, int minute) {
+  static tz.TZDateTime _nextInstanceOf(
+    int hour,
+    int minute,
+  ) {
     final now = tz.TZDateTime.now(tz.local);
-    var scheduled = tz.TZDateTime(tz.local, now.year, now.month, now.day, hour, minute);
+
+    var scheduled = tz.TZDateTime(
+      tz.local,
+      now.year,
+      now.month,
+      now.day,
+      hour,
+      minute,
+    );
+
     if (scheduled.isBefore(now)) {
-      scheduled = scheduled.add(const Duration(days: 1));
+      scheduled =
+          scheduled.add(const Duration(days: 1));
     }
+
     return scheduled;
   }
 
@@ -88,17 +130,28 @@ class NotificationService {
     }
   }
 
-  static String _bodyFor(String kind, Random rnd) {
+  static String _bodyFor(
+    String kind,
+    Random rnd,
+  ) {
     switch (kind) {
       case 'verse':
-        final v = dailyVerses[rnd.nextInt(dailyVerses.length)];
+        final v =
+            dailyVerses[rnd.nextInt(dailyVerses.length)];
         return '"${v.text}" — ${v.ref}';
+
       case 'motivational':
-        return motivationalPhrases[rnd.nextInt(motivationalPhrases.length)];
+        return motivationalPhrases[
+            rnd.nextInt(motivationalPhrases.length)];
+
       case 'prayer':
-        return prayerReminders[rnd.nextInt(prayerReminders.length)];
+        return prayerReminders[
+            rnd.nextInt(prayerReminders.length)];
+
       case 'hope':
-        return hopeMessages[rnd.nextInt(hopeMessages.length)];
+        return hopeMessages[
+            rnd.nextInt(hopeMessages.length)];
+
       default:
         return 'Aproxime-se de Deus hoje.';
     }
