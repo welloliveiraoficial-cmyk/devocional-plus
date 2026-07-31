@@ -1,0 +1,6 @@
+# Assinatura Android
+android/key.properties
+android/*.jks
+
+# Arquivos temporários
+*.log
