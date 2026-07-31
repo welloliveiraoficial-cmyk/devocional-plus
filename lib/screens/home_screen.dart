@@ -1,3 +1,4 @@
+import 'prayer_journal_screen.dart';
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import 'bible_books_screen.dart';
@@ -189,7 +190,13 @@ class _QuickMenu extends StatelessWidget {
       _MenuItemData(Icons.volunteer_activism_rounded, 'Devocionais', () {
         Navigator.of(context).push(MaterialPageRoute(builder: (_) => const DevotionalsScreen()));
       }),
-      _MenuItemData(Icons.edit_note_rounded, 'Diário', () => _emBreve(context)),
+      _MenuItemData(Icons.edit_note_rounded, 'Diário', () {
+  Navigator.of(context).push(
+    MaterialPageRoute(
+      builder: (_) => const PrayerJournalScreen(),
+    ),
+  );
+}),
       _MenuItemData(Icons.calendar_month_rounded, 'Plano', () => _emBreve(context)),
       _MenuItemData(Icons.favorite_rounded, 'Favoritos', () => _emBreve(context)),
       _MenuItemData(Icons.share_rounded, 'Compartilhar', () => _emBreve(context)),
