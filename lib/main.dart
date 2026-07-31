@@ -18,6 +18,7 @@ class DevocionalPlusApp extends StatelessWidget {
     return MaterialApp(
       title: 'Devocional+',
       debugShowCheckedModeBanner: false,
+      navigatorKey: NotificationService.navigatorKey,
       theme: buildAppTheme(),
       home: const SplashScreen(),
     );
@@ -36,10 +37,14 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     _setupNotifications();
+
     Future.delayed(const Duration(seconds: 2), () {
       if (mounted) {
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const UpdateGate(child: HomeScreen())),
+          MaterialPageRoute(
+            builder: (_) =>
+                const UpdateGate(child: HomeScreen()),
+          ),
         );
       }
     });
@@ -70,12 +75,20 @@ class _SplashScreenState extends State<SplashScreen> {
             const SizedBox(height: 22),
             const Text(
               'Devocional+',
-              style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.w500),
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 28,
+                fontWeight: FontWeight.w500,
+              ),
             ),
             const SizedBox(height: 10),
             Text(
               '"Aproxime-se de Deus todos os dias."',
-              style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 13, fontStyle: FontStyle.italic),
+              style: TextStyle(
+                color: Colors.white.withOpacity(0.6),
+                fontSize: 13,
+                fontStyle: FontStyle.italic,
+              ),
             ),
           ],
         ),
