@@ -18,6 +18,9 @@ class _HomeHeaderState extends State<HomeHeader>
   late AnimationController _controller;
   late Animation<double> _animation;
 
+  late AnimationController _sunController;
+  late Animation<double> _sunAnimation;
+
   @override
   void initState() {
     super.initState();
@@ -33,11 +36,32 @@ class _HomeHeaderState extends State<HomeHeader>
     );
 
     _controller.forward();
+
+
+    _sunController = AnimationController(
+      duration: const Duration(seconds: 3),
+      vsync: this,
+    );
+
+    _sunAnimation = Tween<double>(
+      begin: -4,
+      end: 4,
+    ).animate(
+      CurvedAnimation(
+        parent: _sunController,
+        curve: Curves.easeInOut,
+      ),
+    );
+
+    _sunController.repeat(
+      reverse: true,
+    );
   }
 
   @override
   void dispose() {
     _controller.dispose();
+    _sunController.dispose();
     super.dispose();
   }
 
@@ -50,6 +74,7 @@ class _HomeHeaderState extends State<HomeHeader>
           begin: const Offset(0, -0.15),
           end: Offset.zero,
         ).animate(_animation),
+
         child: Container(
           padding: const EdgeInsets.fromLTRB(
             22,
@@ -57,6 +82,7 @@ class _HomeHeaderState extends State<HomeHeader>
             22,
             30,
           ),
+
           decoration: const BoxDecoration(
             gradient: LinearGradient(
               colors: [
@@ -66,14 +92,19 @@ class _HomeHeaderState extends State<HomeHeader>
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
+
             borderRadius: BorderRadius.only(
               bottomLeft: Radius.circular(35),
               bottomRight: Radius.circular(35),
             ),
           ),
+
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment:
+                CrossAxisAlignment.start,
+
             children: [
+
               Text(
                 widget.saudacao,
                 style: const TextStyle(
@@ -98,37 +129,62 @@ class _HomeHeaderState extends State<HomeHeader>
 
               const SizedBox(height: 20),
 
+
               Container(
                 padding: const EdgeInsets.all(18),
+
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.08),
-                  borderRadius: BorderRadius.circular(22),
+                  borderRadius:
+                      BorderRadius.circular(22),
+
                   border: Border.all(
                     color: AppColors.bronze,
                     width: 0.5,
                   ),
                 ),
+
                 child: Row(
                   children: [
-                    Container(
-                      width: 48,
-                      height: 48,
-                      decoration: BoxDecoration(
-                        color: AppColors.bronze.withOpacity(0.18),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.wb_sunny_rounded,
-                        color: AppColors.bronze,
-                        size: 26,
-                      ),
+
+                    AnimatedBuilder(
+                      animation: _sunAnimation,
+
+                      builder: (context, child) {
+                        return Transform.translate(
+                          offset: Offset(
+                            0,
+                            _sunAnimation.value,
+                          ),
+
+                          child: Container(
+                            width: 48,
+                            height: 48,
+
+                            decoration: BoxDecoration(
+                              color: AppColors.bronze
+                                  .withOpacity(0.18),
+                              shape: BoxShape.circle,
+                            ),
+
+                            child: const Icon(
+                              Icons.wb_sunny_rounded,
+                              color: AppColors.bronze,
+                              size: 26,
+                            ),
+                          ),
+                        );
+                      },
                     ),
 
+
                     const SizedBox(width: 14),
+
 
                     const Expanded(
                       child: Text(
                         'Comece seu dia com fé, oração e uma palavra de esperança.',
+
                         style: TextStyle(
                           color: Colors.white70,
                           fontSize: 14,
