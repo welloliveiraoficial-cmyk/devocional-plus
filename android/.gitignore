@@ -1,9 +1,7 @@
-gradle-wrapper.jar
-/.gradle
-/captures/
-/gradlew
-/gradlew.bat
-/local.properties
+.gradle/
+gradlew
+gradlew.bat
+local.properties
 GeneratedPluginRegistrant.java
 
 # Remember to never publicly share your keystore.
@@ -11,4 +9,3 @@ GeneratedPluginRegistrant.java
 key.properties
 **/*.keystore
 **/*.jks
-!app/devocionalplus-release-key.jks
