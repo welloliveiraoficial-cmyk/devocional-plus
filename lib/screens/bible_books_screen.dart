@@ -146,7 +146,7 @@ class _BibleBooksScreenState extends State<BibleBooksScreen>
                         crossAxisCount: 2,
                         crossAxisSpacing: 16,
                         mainAxisSpacing: 16,
-                        childAspectRatio: 1.45,
+                        childAspectRatio: 1.30,
                       ),
 
                       itemBuilder: (context, index) {
