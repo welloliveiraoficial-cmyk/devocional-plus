@@ -1,143 +1,366 @@
 import 'package:flutter/material.dart';
-import '../services/bible_service.dart';
+
 import '../theme/app_theme.dart';
+import '../services/bible_service.dart';
 import 'bible_chapter_list_screen.dart';
 
 class BibleBooksScreen extends StatefulWidget {
   const BibleBooksScreen({super.key});
 
   @override
-  State<BibleBooksScreen> createState() => _BibleBooksScreenState();
+  State<BibleBooksScreen> createState() =>
+      _BibleBooksScreenState();
 }
 
-class _BibleBooksScreenState extends State<BibleBooksScreen> {
-  List<BibleBook> _books = [];
-  List<BibleBook> _filtered = [];
-  bool _loading = true;
-  String? _error;
+class _BibleBooksScreenState extends State<BibleBooksScreen>
+    with SingleTickerProviderStateMixin {
+
+  late AnimationController _controller;
+  late Animation<double> _animation;
 
   @override
   void initState() {
     super.initState();
-    _load();
-  }
 
-  Future<void> _load() async {
-    setState(() {
-      _loading = true;
-      _error = null;
-    });
-    try {
-      final books = await BibleService.getBooks();
-      setState(() {
-        _books = books;
-        _filtered = books;
-        _loading = false;
-      });
-    } catch (e) {
-      setState(() {
-        _error = 'O serviço da Bíblia está instável no momento.\nToque para tentar novamente.';
-        _loading = false;
-      });
-    }
-  }
+    _controller = AnimationController(
+      duration: const Duration(
+        milliseconds: 900,
+      ),
+      vsync: this,
+    );
 
-  void _filter(String query) {
-    setState(() {
-      _filtered = _books
-          .where((b) => b.name.toLowerCase().contains(query.toLowerCase()))
-          .toList();
-    });
+    _animation = CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeOut,
+    );
+
+    _controller.forward();
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Bíblia Sagrada'),
-        backgroundColor: AppColors.navy,
-        foregroundColor: Colors.white,
-      ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: TextField(
-              onChanged: _filter,
-              decoration: InputDecoration(
-                hintText: 'Buscar livro...',
-                prefixIcon: const Icon(Icons.search),
-                filled: true,
-                fillColor: AppColors.skySoft,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
-                ),
-              ),
-            ),
-          ),
-          Expanded(
-            child: _loading
-                ? const Center(child: CircularProgressIndicator())
-                : _error != null
-                    ? Center(
-                        child: InkWell(
-                          onTap: _load,
-                          child: Padding(
-                            padding: const EdgeInsets.all(24),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(Icons.cloud_off_rounded, size: 40, color: AppColors.navy.withOpacity(0.4)),
-                                const SizedBox(height: 12),
-                                Text(_error!, textAlign: TextAlign.center),
-                                const SizedBox(height: 12),
-                                const Text('🔄 Tentar novamente', style: TextStyle(color: AppColors.bronze, fontWeight: FontWeight.bold)),
-                              ],
-                            ),
-                          ),
-                        ),
-                      )
-                    : ListView(
-                        children: [
-                          _testamentSection('Antigo Testamento', 'VT'),
-                          _testamentSection('Novo Testamento', 'NT'),
-                        ],
-                      ),
-          ),
-        ],
-      ),
-    );
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
-  Widget _testamentSection(String label, String code) {
-    final books = _filtered.where((b) => b.testament == code).toList();
-    if (books.isEmpty) return const SizedBox.shrink();
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
-          child: Text(
-            label.toUpperCase(),
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.bold,
-              color: AppColors.navy.withOpacity(0.6),
-              letterSpacing: 0.6,
-            ),
+
+  @override
+  Widget build(BuildContext context) {
+
+    final books = BibleService.books;
+
+
+    return Scaffold(
+
+      backgroundColor: AppColors.paper,
+
+
+      appBar: AppBar(
+
+        backgroundColor: AppColors.navy,
+
+        foregroundColor: Colors.white,
+
+        title: const Text(
+          'Bíblia Sagrada',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
           ),
         ),
-        ...books.map((b) => ListTile(
-              title: Text(b.name),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () {
-                Navigator.of(context).push(MaterialPageRoute(
-                  builder: (_) => BibleChapterListScreen(book: b),
-                ));
-              },
-            )),
-      ],
+
+      ),
+
+
+      body: FadeTransition(
+
+        opacity: _animation,
+
+        child: Column(
+
+          crossAxisAlignment:
+              CrossAxisAlignment.start,
+
+          children: [
+
+
+            Container(
+
+              width: double.infinity,
+
+              padding: const EdgeInsets.fromLTRB(
+                22,
+                24,
+                22,
+                28,
+              ),
+
+
+              decoration: const BoxDecoration(
+
+                gradient: LinearGradient(
+
+                  colors: [
+                    AppColors.navy,
+                    AppColors.navy2,
+                  ],
+
+                  begin: Alignment.topLeft,
+
+                  end: Alignment.bottomRight,
+
+                ),
+
+                borderRadius: BorderRadius.only(
+
+                  bottomLeft:
+                      Radius.circular(30),
+
+                  bottomRight:
+                      Radius.circular(30),
+
+                ),
+
+              ),
+
+
+              child: const Column(
+
+                crossAxisAlignment:
+                    CrossAxisAlignment.start,
+
+
+                children: [
+
+
+                  Text(
+
+                    'Leia a Palavra de Deus',
+
+                    style: TextStyle(
+
+                      color: Colors.white,
+
+                      fontSize: 24,
+
+                      fontWeight:
+                          FontWeight.bold,
+
+                    ),
+
+                  ),
+
+
+                  SizedBox(height: 8),
+
+
+                  Text(
+
+                    'Escolha um livro para começar sua leitura.',
+
+                    style: TextStyle(
+
+                      color: Colors.white70,
+
+                      fontSize: 14,
+
+                    ),
+
+                  ),
+
+                ],
+
+              ),
+
+            ),
+
+
+
+            const SizedBox(height: 20),
+
+
+
+            Expanded(
+
+              child: GridView.builder(
+
+                padding:
+                    const EdgeInsets.symmetric(
+                      horizontal: 22,
+                    ),
+
+
+                itemCount:
+                    books.length,
+
+
+                gridDelegate:
+                    const SliverGridDelegateWithFixedCrossAxisCount(
+
+                  crossAxisCount: 2,
+
+                  crossAxisSpacing: 16,
+
+                  mainAxisSpacing: 16,
+
+                  childAspectRatio: 1.45,
+
+                ),
+
+
+                itemBuilder: (context,index){
+
+
+                  final book = books[index];
+
+
+                  return InkWell(
+
+                    borderRadius:
+                        BorderRadius.circular(22),
+
+
+                    onTap: (){
+
+                      Navigator.push(
+
+                        context,
+
+                        MaterialPageRoute(
+
+                          builder: (_) =>
+                              BibleChapterListScreen(
+                                book: book,
+                              ),
+
+                        ),
+
+                      );
+
+                    },
+
+
+                    child: Container(
+
+                      padding:
+                          const EdgeInsets.all(18),
+
+
+                      decoration: BoxDecoration(
+
+                        color: Colors.white,
+
+
+                        borderRadius:
+                            BorderRadius.circular(22),
+
+
+                        boxShadow: [
+
+                          BoxShadow(
+
+                            color: AppColors.navy
+                                .withOpacity(0.08),
+
+                            blurRadius: 15,
+
+                            offset:
+                                const Offset(0,8),
+
+                          ),
+
+                        ],
+
+                      ),
+
+
+                      child: Column(
+
+                        crossAxisAlignment:
+                            CrossAxisAlignment.start,
+
+
+                        mainAxisAlignment:
+                            MainAxisAlignment.center,
+
+
+                        children: [
+
+
+                          Container(
+
+                            width: 42,
+
+                            height: 42,
+
+
+                            decoration:
+                                BoxDecoration(
+
+                              color:
+                                  AppColors.bronzeSoft,
+
+                              shape:
+                                  BoxShape.circle,
+
+                            ),
+
+
+                            child: const Icon(
+
+                              Icons.menu_book_rounded,
+
+                              color:
+                                  AppColors.bronze,
+
+                            ),
+
+                          ),
+
+
+                          const SizedBox(height: 12),
+
+
+                          Text(
+
+                            book.name,
+
+                            style:
+                                const TextStyle(
+
+                              color:
+                                  AppColors.navy,
+
+                              fontSize: 16,
+
+                              fontWeight:
+                                  FontWeight.bold,
+
+                            ),
+
+                          ),
+
+
+                        ],
+
+                      ),
+
+                    ),
+
+                  );
+
+                },
+
+              ),
+
+            ),
+
+          ],
+
+        ),
+
+      ),
+
     );
+
   }
-}
+  
