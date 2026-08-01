@@ -33,47 +33,68 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.paper,
 
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            HomeHeader(
-              saudacao: _saudacao(),
-            ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
 
-            const DailyVerseCard(),
+          child: Column(
+            children: [
 
-            const Padding(
-              padding: EdgeInsets.only(
-                top: 24,
+              HomeHeader(
+                saudacao: _saudacao(),
               ),
-              child: Text(
-                'ACESSO RÁPIDO',
-                style: TextStyle(
-                  color: AppColors.navy,
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1,
+
+              const SizedBox(height: 18),
+
+              const DailyVerseCard(),
+
+              const SizedBox(height: 24),
+
+              const Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: 22,
+                ),
+
+                child: Align(
+                  alignment: Alignment.centerLeft,
+
+                  child: Text(
+                    'ACESSO RÁPIDO',
+
+                    style: TextStyle(
+                      color: AppColors.navy,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1,
+                    ),
+                  ),
                 ),
               ),
-            ),
 
-            const SizedBox(height: 12),
+              const SizedBox(height: 12),
 
-            const QuickMenu(),
+              const QuickMenu(),
 
-            const ReadingPlanCard(),
+              const SizedBox(height: 8),
 
-            const InspirationCard(),
+              const ReadingPlanCard(),
 
-            const SizedBox(height: 20),
-          ],
+              const SizedBox(height: 8),
+
+              const InspirationCard(),
+
+              const SizedBox(height: 24),
+            ],
+          ),
         ),
       ),
 
       bottomNavigationBar: NavigationBar(
+
         selectedIndex: 0,
 
         destinations: const [
+
           NavigationDestination(
             icon: Icon(
               Icons.home_rounded,
@@ -106,8 +127,10 @@ class HomeScreen extends StatelessWidget {
         onDestinationSelected: (index) {
 
           if (index == 1) {
+
             Navigator.push(
               context,
+
               MaterialPageRoute(
                 builder: (_) =>
                     const BibleBooksScreen(),
@@ -115,9 +138,12 @@ class HomeScreen extends StatelessWidget {
             );
           }
 
+
           if (index == 2) {
+
             Navigator.push(
               context,
+
               MaterialPageRoute(
                 builder: (_) =>
                     const DevotionalsScreen(),
@@ -125,7 +151,9 @@ class HomeScreen extends StatelessWidget {
             );
           }
 
+
           if (index == 3) {
+
             ScaffoldMessenger.of(context)
                 .showSnackBar(
               const SnackBar(
