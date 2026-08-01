@@ -27,9 +27,7 @@ class AppColors {
 ThemeData buildAppTheme() {
   return ThemeData(
     useMaterial3: true,
-
     fontFamily: 'Roboto',
-
     scaffoldBackgroundColor: AppColors.background,
 
     colorScheme: ColorScheme.fromSeed(
@@ -51,7 +49,7 @@ ThemeData buildAppTheme() {
       ),
     ),
 
-    cardTheme: CardThemeData(
+    cardTheme: CardTheme(
       elevation: 8,
       color: AppColors.card,
       shadowColor: Colors.black12,
