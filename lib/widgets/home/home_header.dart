@@ -1,26 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../theme/app_theme.dart';
+import '../../theme/app_decorations.dart';
 
 class HomeHeader extends StatefulWidget {
   final String saudacao;
 
-  const HomeHeader({
-    super.key,
-    required this.saudacao,
-  });
+  const HomeHeader({super.key, required this.saudacao});
 
   @override
   State<HomeHeader> createState() => _HomeHeaderState();
 }
 
-class _HomeHeaderState extends State<HomeHeader>
-    with TickerProviderStateMixin {
+class _HomeHeaderState extends State<HomeHeader> with SingleTickerProviderStateMixin {
   late AnimationController _entryController;
   late Animation<double> _entryAnimation;
-
-  late AnimationController _symbolController;
-  late Animation<double> _rotationAnimation;
-  late Animation<double> _floatAnimation;
 
   bool get isDay {
     final hour = DateTime.now().hour;
@@ -30,46 +24,17 @@ class _HomeHeaderState extends State<HomeHeader>
   @override
   void initState() {
     super.initState();
-
     _entryController = AnimationController(
-      duration: const Duration(milliseconds: 900),
+      duration: const Duration(milliseconds: 700),
       vsync: this,
     );
-
-    _entryAnimation = CurvedAnimation(
-      parent: _entryController,
-      curve: Curves.easeOut,
-    );
-
+    _entryAnimation = CurvedAnimation(parent: _entryController, curve: Curves.easeOut);
     _entryController.forward();
-
-    _symbolController = AnimationController(
-      duration: const Duration(seconds: 5),
-      vsync: this,
-    );
-
-    _rotationAnimation = Tween<double>(
-      begin: 0,
-      end: 6.28,
-    ).animate(_symbolController);
-
-    _floatAnimation = Tween<double>(
-      begin: -5,
-      end: 5,
-    ).animate(
-      CurvedAnimation(
-        parent: _symbolController,
-        curve: Curves.easeInOut,
-      ),
-    );
-
-    _symbolController.repeat();
   }
 
   @override
   void dispose() {
     _entryController.dispose();
-    _symbolController.dispose();
     super.dispose();
   }
 
@@ -78,121 +43,74 @@ class _HomeHeaderState extends State<HomeHeader>
     return FadeTransition(
       opacity: _entryAnimation,
       child: SlideTransition(
-        position: Tween<Offset>(
-          begin: const Offset(0, -0.15),
-          end: Offset.zero,
-        ).animate(_entryAnimation),
+        position: Tween<Offset>(begin: const Offset(0, -0.08), end: Offset.zero).animate(_entryAnimation),
         child: Container(
-          padding: const EdgeInsets.fromLTRB(
-            22,
-            55,
-            22,
-            30,
-          ),
+          padding: const EdgeInsets.fromLTRB(22, 55, 22, 30),
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [
-                AppColors.navy,
-                AppColors.navy2,
-              ],
+              colors: [AppColors.primary, AppColors.primaryDark],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
             borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(35),
-              bottomRight: Radius.circular(35),
+              bottomLeft: Radius.circular(36),
+              bottomRight: Radius.circular(36),
             ),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-
               Text(
                 widget.saudacao,
                 style: const TextStyle(
-                  color: AppColors.bronzeSoft,
+                  color: AppColors.goldSoft,
                   fontSize: 13,
-                  letterSpacing: 1.2,
+                  letterSpacing: 1.4,
                   fontWeight: FontWeight.w600,
                 ),
               ),
-
               const SizedBox(height: 8),
-
-              const Text(
+              Text(
                 'Que a presença de Deus esteja com você hoje.',
-                style: TextStyle(
+                style: GoogleFonts.playfairDisplay(
                   color: Colors.white,
-                  fontSize: 22,
+                  fontSize: 23,
                   height: 1.3,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
-
               const SizedBox(height: 20),
-
               Container(
                 padding: const EdgeInsets.all(18),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.08),
+                  color: Colors.white.withOpacity(0.07),
                   borderRadius: BorderRadius.circular(22),
-                  border: Border.all(
-                    color: AppColors.bronze,
-                    width: 0.5,
-                  ),
+                  border: Border.all(color: AppColors.gold.withOpacity(0.35), width: 0.8),
                 ),
                 child: Row(
                   children: [
-
-                    AnimatedBuilder(
-                      animation: _symbolController,
-                      builder: (context, child) {
-
-                        return Transform.translate(
-                          offset: Offset(
-                            0,
-                            isDay
-                                ? 0
-                                : _floatAnimation.value,
-                          ),
-
-                          child: Transform.rotate(
-                            angle: isDay
-                                ? _rotationAnimation.value
-                                : 0,
-
-                            child: Container(
-                              width: 48,
-                              height: 48,
-                              decoration: BoxDecoration(
-                                color: AppColors.bronze
-                                    .withOpacity(0.18),
-                                shape: BoxShape.circle,
-                              ),
-
-                              child: Icon(
-                                isDay
-                                    ? Icons.wb_sunny_rounded
-                                    : Icons.nightlight_round,
-                                color: AppColors.bronze,
-                                size: 26,
-                              ),
-                            ),
-                          ),
-                        );
-                      },
+                    GoldenGlow(
+                      size: 60,
+                      opacity: 0.35,
+                      child: Container(
+                        width: 46,
+                        height: 46,
+                        decoration: BoxDecoration(
+                          color: AppColors.gold.withOpacity(0.16),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          isDay ? Icons.wb_sunny_rounded : Icons.nightlight_round,
+                          color: AppColors.goldBright,
+                          size: 24,
+                        ),
+                      ),
                     ),
-
                     const SizedBox(width: 14),
-
                     const Expanded(
                       child: Text(
                         'Comece seu dia com fé, oração e uma palavra de esperança.',
-                        style: TextStyle(
-                          color: Colors.white70,
-                          fontSize: 14,
-                          height: 1.4,
-                        ),
+                        style: TextStyle(color: Colors.white70, fontSize: 14, height: 1.4),
                       ),
                     ),
                   ],
