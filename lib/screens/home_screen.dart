@@ -7,6 +7,7 @@ import '../widgets/home/reading_plan_card.dart';
 import '../widgets/home/inspiration_card.dart';
 
 import '../theme/app_theme.dart';
+import '../theme/app_decorations.dart';
 
 import 'bible_books_screen.dart';
 import 'devotionals_screen.dart';
@@ -16,151 +17,57 @@ class HomeScreen extends StatelessWidget {
 
   String _saudacao() {
     final hora = DateTime.now().hour;
-
-    if (hora < 12) {
-      return 'Bom dia';
-    }
-
-    if (hora < 18) {
-      return 'Boa tarde';
-    }
-
+    if (hora < 12) return 'Bom dia';
+    if (hora < 18) return 'Boa tarde';
     return 'Boa noite';
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.paper,
-
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
-
           child: Column(
             children: [
-
-              HomeHeader(
-                saudacao: _saudacao(),
-              ),
-
+              HomeHeader(saudacao: _saudacao()),
               const SizedBox(height: 18),
-
               const DailyVerseCard(),
-
-              const SizedBox(height: 24),
-
-              const Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: 22,
-                ),
-
-                child: Align(
-                  alignment: Alignment.centerLeft,
-
-                  child: Text(
-                    'ACESSO RÁPIDO',
-
-                    style: TextStyle(
-                      color: AppColors.navy,
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1,
-                    ),
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 12),
-
+              const SizedBox(height: 8),
+              const SectionHeading('Acesso rápido'),
               const QuickMenu(),
-
               const SizedBox(height: 8),
-
               const ReadingPlanCard(),
-
               const SizedBox(height: 8),
-
               const InspirationCard(),
-
               const SizedBox(height: 24),
             ],
           ),
         ),
       ),
-
       bottomNavigationBar: NavigationBar(
-
         selectedIndex: 0,
-
         destinations: const [
-
-          NavigationDestination(
-            icon: Icon(
-              Icons.home_rounded,
-            ),
-            label: 'Início',
-          ),
-
-          NavigationDestination(
-            icon: Icon(
-              Icons.menu_book_rounded,
-            ),
-            label: 'Bíblia',
-          ),
-
-          NavigationDestination(
-            icon: Icon(
-              Icons.volunteer_activism_rounded,
-            ),
-            label: 'Devocional',
-          ),
-
-          NavigationDestination(
-            icon: Icon(
-              Icons.person_rounded,
-            ),
-            label: 'Perfil',
-          ),
+          NavigationDestination(icon: Icon(Icons.home_rounded), label: 'Início'),
+          NavigationDestination(icon: Icon(Icons.menu_book_rounded), label: 'Bíblia'),
+          NavigationDestination(icon: Icon(Icons.volunteer_activism_rounded), label: 'Devocional'),
+          NavigationDestination(icon: Icon(Icons.person_rounded), label: 'Perfil'),
         ],
-
         onDestinationSelected: (index) {
+          AppHaptics.select();
 
           if (index == 1) {
-
-            Navigator.push(
-              context,
-
-              MaterialPageRoute(
-                builder: (_) =>
-                    const BibleBooksScreen(),
-              ),
-            );
+            Navigator.push(context, FadeSlideRoute(page: const BibleBooksScreen()));
           }
-
 
           if (index == 2) {
-
-            Navigator.push(
-              context,
-
-              MaterialPageRoute(
-                builder: (_) =>
-                    const DevotionalsScreen(),
-              ),
-            );
+            Navigator.push(context, FadeSlideRoute(page: const DevotionalsScreen()));
           }
 
-
           if (index == 3) {
-
-            ScaffoldMessenger.of(context)
-                .showSnackBar(
-              const SnackBar(
-                content: Text(
-                  'Perfil em breve 🙏',
-                ),
-              ),
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Perfil em breve 🙏')),
             );
           }
         },
