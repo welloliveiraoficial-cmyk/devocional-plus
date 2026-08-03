@@ -11,6 +11,7 @@ class AppColors {
   static const goldBright = Color(0xFFE3C158);
 
   static const parchment = Color(0xFFF7F1E3);
+  static const emberSoft = Color(0xFFE8DCC0);
   static const background = Color(0xFFF7F5F1);
   static const card = Colors.white;
 
