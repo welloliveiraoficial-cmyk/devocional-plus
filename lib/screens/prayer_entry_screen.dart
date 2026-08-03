@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../models/prayer_entry.dart';
 import '../services/prayer_service.dart';
 import '../theme/app_theme.dart';
+import '../theme/app_decorations.dart';
 
 class PrayerEntryScreen extends StatefulWidget {
   final PrayerEntry? entry;
@@ -41,11 +43,11 @@ class _PrayerEntryScreenState extends State<PrayerEntryScreen> {
 
   Future<void> _save() async {
     if (_titleController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Escreva um título antes de salvar.')),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Escreva um título antes de salvar.')));
       return;
     }
+
+    AppHaptics.tap();
 
     if (_isEditing) {
       final updated = widget.entry!.copyWith(
@@ -76,6 +78,7 @@ class _PrayerEntryScreenState extends State<PrayerEntryScreen> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
         title: const Text('Excluir?'),
         content: const Text('Essa ação não pode ser desfeita.'),
         actions: [
@@ -93,17 +96,20 @@ class _PrayerEntryScreenState extends State<PrayerEntryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: Text(_isEditing ? 'Editar' : 'Novo Registro'),
-        backgroundColor: AppColors.navy,
+        backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
+        title: Text(_isEditing ? 'Editar' : 'Novo Registro', style: GoogleFonts.playfairDisplay(fontWeight: FontWeight.w600, fontSize: 19)),
         actions: [
           IconButton(
             icon: Icon(_favorite ? Icons.favorite : Icons.favorite_border),
-            onPressed: () => setState(() => _favorite = !_favorite),
+            onPressed: () {
+              AppHaptics.select();
+              setState(() => _favorite = !_favorite);
+            },
           ),
-          if (_isEditing)
-            IconButton(icon: const Icon(Icons.delete_outline), onPressed: _delete),
+          if (_isEditing) IconButton(icon: const Icon(Icons.delete_outline), onPressed: _delete),
         ],
       ),
       body: ListView(
@@ -116,37 +122,41 @@ class _PrayerEntryScreenState extends State<PrayerEntryScreen> {
               return ChoiceChip(
                 label: Text(c),
                 selected: selected,
-                selectedColor: AppColors.bronze,
-                labelStyle: TextStyle(color: selected ? Colors.white : AppColors.navy),
-                onSelected: (_) => setState(() => _category = c),
+                selectedColor: AppColors.gold,
+                backgroundColor: Colors.white,
+                labelStyle: TextStyle(color: selected ? Colors.white : AppColors.ink, fontWeight: FontWeight.w600),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20), side: BorderSide(color: AppColors.goldSoft)),
+                onSelected: (_) {
+                  AppHaptics.select();
+                  setState(() => _category = c);
+                },
               );
             }).toList(),
           ),
-          const SizedBox(height: 20),
-          TextField(
-            controller: _titleController,
-            decoration: const InputDecoration(labelText: 'Título', border: OutlineInputBorder()),
-          ),
+          const SizedBox(height: 22),
+          TextField(controller: _titleController, decoration: const InputDecoration(labelText: 'Título')),
           const SizedBox(height: 16),
           TextField(
             controller: _descController,
             maxLines: 6,
-            decoration: const InputDecoration(labelText: 'Descrição (opcional)', border: OutlineInputBorder(), alignLabelWithHint: true),
+            decoration: const InputDecoration(labelText: 'Descrição (opcional)', alignLabelWithHint: true),
           ),
           const SizedBox(height: 16),
-          SwitchListTile(
-            contentPadding: EdgeInsets.zero,
-            title: const Text('Marcar como respondido'),
-            value: _answered,
-            activeColor: AppColors.bronze,
-            onChanged: (v) => setState(() => _answered = v),
+          Container(
+            decoration: BoxDecoration(color: AppColors.card, borderRadius: BorderRadius.circular(16)),
+            child: SwitchListTile(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              title: const Text('Marcar como respondido'),
+              value: _answered,
+              activeColor: AppColors.gold,
+              onChanged: (v) {
+                AppHaptics.select();
+                setState(() => _answered = v);
+              },
+            ),
           ),
-          const SizedBox(height: 20),
-          FilledButton(
-            style: FilledButton.styleFrom(backgroundColor: AppColors.bronze, padding: const EdgeInsets.symmetric(vertical: 14)),
-            onPressed: _save,
-            child: const Text('Salvar'),
-          ),
+          const SizedBox(height: 24),
+          ElevatedButton(onPressed: _save, child: const Text('Salvar')),
         ],
       ),
     );
