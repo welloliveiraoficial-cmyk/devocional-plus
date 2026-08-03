@@ -9,18 +9,19 @@ jobs:
     steps:
       - name: Gerar keystore
         run: |
-          keytool -genkey -v -keystore devocionalplus-release-key-v2.jks \
+          SENHA="DvPlus2026$(date +%s)Segura"
+          keytool -genkey -v -keystore devocionalplus-release-key-v3.jks \
             -keyalg RSA -keysize 2048 -validity 10000 \
             -alias devocionalplus \
-            -storepass "Dv$(date +%s)Plus2026" \
-            -keypass "Dv$(date +%s)Plus2026" \
+            -storepass "$SENHA" \
+            -keypass "$SENHA" \
             -dname "CN=DevocionalPlus, OU=App, O=DevocionalPlus, L=Brasil, S=BR, C=BR"
-          echo "storepass=Dv$(date +%s)Plus2026" > senha.txt
+          echo "storepass=$SENHA" > senha.txt
 
       - name: Upload da chave
         uses: actions/upload-artifact@v4
         with:
-          name: nova-chave
+          name: nova-chave-v3
           path: |
-            devocionalplus-release-key-v2.jks
+            devocionalplus-release-key-v3.jks
             senha.txt
